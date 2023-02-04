@@ -120,7 +120,6 @@ public class PlayerController : MonoBehaviour
         // crouching
         if(Input.GetKey(crouchKey))
         {
-            Debug.Log("Crouching");
             state = MovementState.crouching;
             moveSpeed = crouchSpeed;
         }
