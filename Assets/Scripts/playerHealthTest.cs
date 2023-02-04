@@ -25,8 +25,8 @@ public class playerHealthTest : MonoBehaviour
             takeDamage(10);
         }
 
-        DamageOverTime(1, 1);
-        healthBar.SetHealth(currentHealth);
+        StartCoroutine(LoseHealthOverTime());
+        
     }
 
     void takeDamage(int damage)
@@ -35,20 +35,14 @@ public class playerHealthTest : MonoBehaviour
         healthBar.SetHealth(currentHealth);
     }
 
-    public void DamageOverTime(int damageAmount, int damageTime)
-    {
-        StartCoroutine(DamageOverTimeCoroutine(damageAmount, damageTime));
-    }
+    
 
-    IEnumerator DamageOverTimeCoroutine(int damageAmount, int duration)
+    IEnumerator LoseHealthOverTime()
     {
-        float amountDamaged = 0;
-        int damagePerLoop = damageAmount / duration;
-        while (amountDamaged < damageAmount)
+        while (currentHealth > 0)
         {
-            currentHealth -= damagePerLoop;
-            Debug.Log(currentHealth.ToString());
-            amountDamaged += damagePerLoop;
+            currentHealth -= 1;
+            healthBar.SetHealth(currentHealth);
             yield return new WaitForSeconds(5f);
         }
     }
