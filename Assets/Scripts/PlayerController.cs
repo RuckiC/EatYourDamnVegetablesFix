@@ -120,12 +120,13 @@ public class PlayerController : MonoBehaviour
         // crouching
         if(Input.GetKey(crouchKey))
         {
+            Debug.Log("Crouching");
             state = MovementState.crouching;
             moveSpeed = crouchSpeed;
         }
 
         // sprinting
-        if(grounded && Input.GetKey(sprintKey))
+        else if(grounded && Input.GetKey(sprintKey))
         {
             state = MovementState.sprinting;
             moveSpeed = sprintSpeed;
