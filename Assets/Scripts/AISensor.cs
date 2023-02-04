@@ -13,7 +13,6 @@ public class AISensor : MonoBehaviour
     public LayerMask playerLayer;
     public LayerMask occlusionLayer;
     public List<GameObject> Objects = new List<GameObject>();
-    public GameObject playerObj;
 
     Collider[] colliders = new Collider[50];
     Mesh mesh;
