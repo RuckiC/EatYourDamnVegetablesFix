@@ -6,8 +6,9 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public CandyBar candyBar;
-    public GameObject gameOverText;
-    public GameObject restartButton;
+    public DinnerBar dinnerBar;
+    public GameObject gameOverScreen;
+    public GameObject winScreen;
 
     // Start is called before the first frame update
     void Start()
@@ -21,12 +22,22 @@ public class GameManager : MonoBehaviour
        if(candyBar.sugarHighTime <= 0)
         {
             pauseGame();
-            gameOverText.SetActive(true);
+            gameOverScreen.SetActive(true);
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 restartGame();
             }
         } 
+
+       if (dinnerBar.foodGoesColdTime <= 0)
+        {
+            pauseGame();
+            winScreen.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                SceneManager.LoadScene(0);
+            }
+        }
     }
 
     void pauseGame()
