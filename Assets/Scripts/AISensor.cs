@@ -4,17 +4,22 @@ using UnityEngine;
 
 public class AISensor : MonoBehaviour
 {
-    public float distance = 10;
-    public float angle = 30;
+    public float seenDistance = 10;
+    public float seenAngle = 30;
+    public float chaseDistance = 10;
+    public float chaseAngle = 30;
     public float height = 1.0f;
-    public Color meshColor = Color.red;
+    public Color seenMeshColor;
+    public Color chaseMeshColor;
     public int scanFrequency = 30;
     public LayerMask playerLayer;
     public LayerMask occlusionLayer;
-    public List<GameObject> Objects = new List<GameObject>();
+    public List<GameObject> PlayerSeen = new List<GameObject>();
+    public List<GameObject> PlayerChase = new List<GameObject>();
 
     Collider[] colliders = new Collider[50];
-    Mesh mesh;
+    Mesh seenMesh;
+    Mesh chaseMesh;
     int count;
     float scanInterval;
     float scanTimer;
@@ -26,6 +31,7 @@ public class AISensor : MonoBehaviour
 
     void Update()
     {
+        // If scan timer has expired, trigger Scan function
         scanTimer -= Time.deltaTime;
         if (scanTimer < 0)
         {
@@ -34,21 +40,28 @@ public class AISensor : MonoBehaviour
         }
     }
 
+    // Scan function that will check inside the seen and chase ranges, then add player to list if inside
     private void Scan()
     {
-        count = Physics.OverlapSphereNonAlloc(transform.position, distance, colliders, playerLayer, QueryTriggerInteraction.Collide);
+        count = Physics.OverlapSphereNonAlloc(transform.position, seenDistance, colliders, playerLayer, QueryTriggerInteraction.Collide) + Physics.OverlapSphereNonAlloc(transform.position, chaseDistance, colliders, playerLayer, QueryTriggerInteraction.Collide);
 
-        Objects.Clear();
+        PlayerSeen.Clear();
+        PlayerChase.Clear();
         for(int i = 0; i < count; ++i)
         {
             GameObject obj = colliders[i].gameObject;
             if(IsInSight(obj))
             {
-                Objects.Add(obj);
+                PlayerSeen.Add(obj);
+            }
+            if(IsInChaseRange(obj))
+            {
+                PlayerChase.Add(obj);
             }
         }
     }
 
+    // Check if playeer is in seen range and LoS
     public bool IsInSight(GameObject obj)
     {
         Vector3 origin = transform.position;
@@ -61,7 +74,7 @@ public class AISensor : MonoBehaviour
 
         direction.y = 0;
         float deltaAngle = Vector3.Angle(direction, transform.forward);
-        if(deltaAngle > angle)
+        if(deltaAngle > seenAngle)
         {
             return false;
         }
@@ -76,9 +89,38 @@ public class AISensor : MonoBehaviour
         return true;
     }
 
-    Mesh CreateWedgeMesh()
+    // Check if player is in chase range and LoS
+    public bool IsInChaseRange(GameObject obj)
     {
-        Mesh mesh = new Mesh();
+        Vector3 origin = transform.position;
+        Vector3 dest = obj.transform.position;
+        Vector3 direction = dest - origin;
+        if (direction.y < 0 || direction.y > height)
+        {
+            return false;
+        }
+
+        direction.y = 0;
+        float deltaAngle = Vector3.Angle(direction, transform.forward);
+        if (deltaAngle > chaseAngle)
+        {
+            return false;
+        }
+
+        origin.y += height / 2;
+        dest.y = origin.y;
+        if (Physics.Linecast(origin, dest, occlusionLayer))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    // Creation of seen mesh
+    Mesh CreateSeenWedgeMesh()
+    {
+        Mesh seenMesh = new Mesh();
 
         int segments = 10;
         int numTriangles = (segments * 4) + 2 + 2;
@@ -88,8 +130,8 @@ public class AISensor : MonoBehaviour
         int[] triangles = new int[numVertices];
 
         Vector3 bottomCenter = Vector3.zero;
-        Vector3 bottomLeft = Quaternion.Euler(0, -angle, 0) * Vector3.forward * distance;
-        Vector3 bottomRight = Quaternion.Euler(0, angle, 0) * Vector3.forward * distance;
+        Vector3 bottomLeft = Quaternion.Euler(0, -seenAngle, 0) * Vector3.forward * seenDistance;
+        Vector3 bottomRight = Quaternion.Euler(0, seenAngle, 0) * Vector3.forward * seenDistance;
 
         Vector3 topCenter = bottomCenter + Vector3.up.normalized * height;
         Vector3 topLeft = bottomLeft + Vector3.up.normalized * height;
@@ -115,12 +157,12 @@ public class AISensor : MonoBehaviour
         vertices[vert++] = bottomRight;
         vertices[vert++] = bottomCenter;
 
-        float currentAngle = -angle;
-        float deltaAngle = (angle * 2) / segments;
+        float currentAngle = -seenAngle;
+        float deltaAngle = (seenAngle * 2) / segments;
         for(int i = 0; i < segments; ++i)
         {
-            bottomLeft = Quaternion.Euler(0, currentAngle, 0) * Vector3.forward * distance;
-            bottomRight = Quaternion.Euler(0, currentAngle + deltaAngle, 0) * Vector3.forward * distance;
+            bottomLeft = Quaternion.Euler(0, currentAngle, 0) * Vector3.forward * seenDistance;
+            bottomRight = Quaternion.Euler(0, currentAngle + deltaAngle, 0) * Vector3.forward * seenDistance;
 
             topLeft = bottomLeft + Vector3.up * height;
             topRight = bottomRight + Vector3.up * height;
@@ -152,35 +194,125 @@ public class AISensor : MonoBehaviour
             triangles[i] = i;
         }
 
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
-        mesh.RecalculateNormals();
+        seenMesh.vertices = vertices;
+        seenMesh.triangles = triangles;
+        seenMesh.RecalculateNormals();
 
-        return mesh;
+        return seenMesh;
     }
 
+    // Creation of chase mesh
+    Mesh CreateChaseWedgeMesh()
+    {
+        Mesh chaseMesh = new Mesh();
+
+        int segments = 10;
+        int numTriangles = (segments * 4) + 2 + 2;
+        int numVertices = numTriangles * 3;
+
+        Vector3[] vertices = new Vector3[numVertices];
+        int[] triangles = new int[numVertices];
+
+        Vector3 bottomCenter = Vector3.zero;
+        Vector3 bottomLeft = Quaternion.Euler(0, -chaseAngle, 0) * Vector3.forward * chaseDistance;
+        Vector3 bottomRight = Quaternion.Euler(0, chaseAngle, 0) * Vector3.forward * chaseDistance;
+
+        Vector3 topCenter = bottomCenter + Vector3.up.normalized * height;
+        Vector3 topLeft = bottomLeft + Vector3.up.normalized * height;
+        Vector3 topRight = bottomRight + Vector3.up.normalized * height;
+
+        int vert = 0;
+
+        // left side
+        vertices[vert++] = bottomCenter;
+        vertices[vert++] = bottomLeft;
+        vertices[vert++] = topLeft;
+
+        vertices[vert++] = topLeft;
+        vertices[vert++] = topCenter;
+        vertices[vert++] = bottomCenter;
+
+        // right side
+        vertices[vert++] = bottomCenter;
+        vertices[vert++] = topCenter;
+        vertices[vert++] = topRight;
+
+        vertices[vert++] = topRight;
+        vertices[vert++] = bottomRight;
+        vertices[vert++] = bottomCenter;
+
+        float currentAngle = -chaseAngle;
+        float deltaAngle = (chaseAngle * 2) / segments;
+        for (int i = 0; i < segments; ++i)
+        {
+            bottomLeft = Quaternion.Euler(0, currentAngle, 0) * Vector3.forward * chaseDistance;
+            bottomRight = Quaternion.Euler(0, currentAngle + deltaAngle, 0) * Vector3.forward * chaseDistance;
+
+            topLeft = bottomLeft + Vector3.up * height;
+            topRight = bottomRight + Vector3.up * height;
+
+            // far side
+            vertices[vert++] = bottomLeft;
+            vertices[vert++] = bottomRight;
+            vertices[vert++] = topRight;
+
+            vertices[vert++] = topRight;
+            vertices[vert++] = topLeft;
+            vertices[vert++] = bottomLeft;
+
+            // top
+            vertices[vert++] = topCenter;
+            vertices[vert++] = topLeft;
+            vertices[vert++] = topRight;
+
+            // bottom
+            vertices[vert++] = bottomCenter;
+            vertices[vert++] = bottomRight;
+            vertices[vert++] = bottomLeft;
+
+            currentAngle += deltaAngle;
+        }
+
+        for (int i = 0; i < numVertices; ++i)
+        {
+            triangles[i] = i;
+        }
+
+        chaseMesh.vertices = vertices;
+        chaseMesh.triangles = triangles;
+        chaseMesh.RecalculateNormals();
+
+        return chaseMesh;
+    }
+
+    // Sets meshs in OnValidate in case we change values in inspector
     private void OnValidate()
     {
-        mesh = CreateWedgeMesh();
+        seenMesh = CreateSeenWedgeMesh();
+        chaseMesh = CreateChaseWedgeMesh();
         scanInterval = 1.0f / scanFrequency;
     }
 
+    // Draw Gizmos
     private void OnDrawGizmos()
     {
-        if (mesh)
+        // Draws Seen Mesh
+        if (seenMesh)
         {
-            Gizmos.color = meshColor;
-            Gizmos.DrawMesh(mesh, transform.position, transform.rotation);
+            Gizmos.color = seenMeshColor;
+            Gizmos.DrawMesh(seenMesh, transform.position, transform.rotation);
         }
 
-        Gizmos.DrawWireSphere(transform.position, distance);
-        for(int i = 0; i < count; i++)
+        // Draws Chase Mesh
+        if (chaseMesh)
         {
-            Gizmos.DrawSphere(colliders[i].transform.position, 0.2f);
+            Gizmos.color = chaseMeshColor;
+            Gizmos.DrawMesh(chaseMesh, transform.position, transform.rotation);
         }
 
+        // Highlights player green if in seen range
         Gizmos.color = Color.green;
-        foreach(var obj in Objects)
+        foreach(var obj in PlayerSeen)
         {
             Gizmos.DrawSphere(obj.transform.position, 1f);
         }

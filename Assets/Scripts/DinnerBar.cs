@@ -9,20 +9,31 @@ public class DinnerBar : MonoBehaviour
     public Gradient gradient;
     public Image fill;
 
-    public float currentTemp;
-    public float maxTemp;
+    public float foodGoesColdTime;
+    int interval = 1;
+    float nextTime = 0;
 
     private void Start()
     {
-        currentTemp = maxTemp;
-        SetMaxTemp(maxTemp);
+        SetMaxTemp(foodGoesColdTime);
     }
 
     private void Update()
     {
-        StartCoroutine(DinnerTemp());
-    }
+        if (Time.time >= nextTime)
+        {
 
+            foodGoesColdTime -= 1;
+            SetTemp(foodGoesColdTime);
+
+            nextTime += interval;
+
+            if (foodGoesColdTime <= 0)
+            {
+                Debug.Log("Food Gone Cold, SUCK IT MOM!");
+            }
+        }
+    }
 
     public void SetMaxTemp(float temp)
     {
@@ -35,15 +46,5 @@ public class DinnerBar : MonoBehaviour
     {
         slider.value = temp;
         fill.color = gradient.Evaluate(slider.normalizedValue);
-    }
-
-    IEnumerator DinnerTemp()
-    {
-        while (currentTemp > 0)
-        {
-            currentTemp -= 1;
-            SetTemp(currentTemp);
-            yield return new WaitForSeconds(5f);
-        }
     }
 }

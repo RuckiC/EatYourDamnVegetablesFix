@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-[ExecuteInEditMode]
 public class ParentPatrol : MonoBehaviour
 {
     public GameObject player;
@@ -32,7 +31,7 @@ public class ParentPatrol : MonoBehaviour
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
             GotoNextPoint();
 
-        if (_AISensor.Objects.Count > 0)
+        if (_AISensor.PlayerSeen.Count > 0)
         {
             Debug.Log("FOUND YOU TIMMY!");
             Chase();
@@ -61,6 +60,9 @@ public class ParentPatrol : MonoBehaviour
 
     private void Chase()
     {
-        agent.SetDestination(player.transform.position);
+        if(_AISensor.PlayerChase.Count > 0)
+        {
+            agent.SetDestination(player.transform.position);
+        }
     }
 }
