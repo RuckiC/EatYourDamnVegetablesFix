@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviour
         {
             pauseGame();
             gameOverScreen.SetActive(true);
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 restartGame();
@@ -47,7 +49,13 @@ public class GameManager : MonoBehaviour
 
     public void restartGame()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void quitGame()
+    {
+        Application.Quit();
     }
 
 
