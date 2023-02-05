@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+[ExecuteInEditMode]
 public class ParentPatrol : MonoBehaviour
 {
+    public GameObject player;
     public Transform[] points;
     private int destPoint = 0;
     private NavMeshAgent agent;
     public AISensor _AISensor;
-
+    public float gameOverRange;
 
     void Start()
     {
@@ -35,6 +37,12 @@ public class ParentPatrol : MonoBehaviour
             Debug.Log("FOUND YOU TIMMY!");
             Chase();
         }
+
+        Vector3 distanceFromPlayer = this.transform.position - player.transform.position;
+        if(distanceFromPlayer.magnitude <= gameOverRange)
+        {
+            Debug.Log("YOU LOSE!!!");
+        }
     }
 
     void GotoNextPoint()
@@ -53,6 +61,6 @@ public class ParentPatrol : MonoBehaviour
 
     private void Chase()
     {
-        agent.SetDestination
+        agent.SetDestination(player.transform.position);
     }
 }
