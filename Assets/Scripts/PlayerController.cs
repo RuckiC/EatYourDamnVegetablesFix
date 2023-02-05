@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody rb;
 
+    public CandyBar _candyBar;
+
     public MovementState state;
 
     public enum MovementState
@@ -122,6 +124,7 @@ public class PlayerController : MonoBehaviour
         {
             state = MovementState.crouching;
             moveSpeed = crouchSpeed;
+            _candyBar.drainRate = 0.75f;
         }
 
         // sprinting
@@ -129,6 +132,7 @@ public class PlayerController : MonoBehaviour
         {
             state = MovementState.sprinting;
             moveSpeed = sprintSpeed;
+            _candyBar.drainRate = 2;
         }
 
         // walking
@@ -136,12 +140,14 @@ public class PlayerController : MonoBehaviour
         {
             state = MovementState.walking;
             moveSpeed = walkSpeed;
+            _candyBar.drainRate = 1;
         }
 
         // air
         else
         {
             state = MovementState.air;
+            _candyBar.drainRate = 1;
         }
     }
     private void MovePlayer()

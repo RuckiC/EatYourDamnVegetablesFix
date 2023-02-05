@@ -11,6 +11,7 @@ public class CandyBar : MonoBehaviour
 
     public float sugarHighTime;
     int interval = 1;
+    public float drainRate = 1;
     float nextTime = 0;
 
     // Start is called before the first frame update
@@ -24,7 +25,7 @@ public class CandyBar : MonoBehaviour
         if (Time.time >= nextTime)
         {
 
-            sugarHighTime -= 1;
+            sugarHighTime -= drainRate;
             SetSugarHigh(sugarHighTime);
 
             nextTime += interval;

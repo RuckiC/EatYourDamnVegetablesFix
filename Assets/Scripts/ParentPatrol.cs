@@ -55,7 +55,7 @@ public class ParentPatrol : MonoBehaviour
 
         // Choose the next point in the array as the destination,
         // cycling to the start if necessary.
-        destPoint = Random.Range(0, 3);
+        destPoint = Random.Range(0, 37);
     }
 
     private void Chase()
