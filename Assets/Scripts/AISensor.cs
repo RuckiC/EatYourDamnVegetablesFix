@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class AISensor : MonoBehaviour
 {
     public float distance = 10;
@@ -16,16 +15,16 @@ public class AISensor : MonoBehaviour
 
     Collider[] colliders = new Collider[50];
     Mesh mesh;
-    public int count;
-    public float scanInterval;
-    public float scanTimer;
+    int count;
+    float scanInterval;
+    float scanTimer;
 
-    private void Start()
+    void Start()
     {
         scanInterval = 1.0f / scanFrequency;
     }
 
-    private void Update()
+    void Update()
     {
         scanTimer -= Time.deltaTime;
         if (scanTimer < 0)
@@ -92,9 +91,9 @@ public class AISensor : MonoBehaviour
         Vector3 bottomLeft = Quaternion.Euler(0, -angle, 0) * Vector3.forward * distance;
         Vector3 bottomRight = Quaternion.Euler(0, angle, 0) * Vector3.forward * distance;
 
-        Vector3 topCenter = bottomCenter + Vector3.up * height;
-        Vector3 topLeft = bottomLeft + Vector3.up * height;
-        Vector3 topRight = bottomRight + Vector3.up * height;
+        Vector3 topCenter = bottomCenter + Vector3.up.normalized * height;
+        Vector3 topLeft = bottomLeft + Vector3.up.normalized * height;
+        Vector3 topRight = bottomRight + Vector3.up.normalized * height;
 
         int vert = 0;
 
@@ -164,7 +163,6 @@ public class AISensor : MonoBehaviour
     {
         mesh = CreateWedgeMesh();
         scanInterval = 1.0f / scanFrequency;
-
     }
 
     private void OnDrawGizmos()

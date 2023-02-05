@@ -8,7 +8,8 @@ public class ParentPatrol : MonoBehaviour
     public Transform[] points;
     private int destPoint = 0;
     private NavMeshAgent agent;
-    private AISensor _AISensor;
+    public AISensor _AISensor;
+
 
     void Start()
     {
@@ -22,6 +23,19 @@ public class ParentPatrol : MonoBehaviour
         GotoNextPoint();
     }
 
+    void Update()
+    {
+        // Choose the next destination point when the agent gets
+        // close to the current one.
+        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+            GotoNextPoint();
+
+        if (_AISensor.Objects.Count > 0)
+        {
+            Debug.Log("FOUND YOU TIMMY!");
+            Chase();
+        }
+    }
 
     void GotoNextPoint()
     {
@@ -37,17 +51,8 @@ public class ParentPatrol : MonoBehaviour
         destPoint = Random.Range(0, 3);
     }
 
-    void Update()
+    private void Chase()
     {
-        // Choose the next destination point when the agent gets
-        // close to the current one.
-        if (!agent.pathPending && agent.remainingDistance < 0.5f)
-            GotoNextPoint();
-
-        if(_AISensor.Objects.Count > 0)
-        {
-            Debug.Log("FOUND YOU TIMMY!");
-            //Chase();
-        }
+        agent.SetDestination
     }
 }
