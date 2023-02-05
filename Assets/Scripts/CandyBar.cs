@@ -35,6 +35,11 @@ public class CandyBar : MonoBehaviour
                 Debug.Log("No more sugar to the brain, bodily function have shut down");
             }
         }
+
+        if(sugarHighTime > 240)
+        {
+            sugarHighTime = 240;
+        }
     }
 
     public void SetMaxSugarHigh(float sugarLevel)

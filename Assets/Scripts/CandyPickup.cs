@@ -14,6 +14,8 @@ public class CandyPickup : MonoBehaviour
 
     public CandyBar _candyBar;
 
+    public Animator anim;
+
     private void Start()
     {
         startPos = this.transform.position;
@@ -46,6 +48,7 @@ public class CandyPickup : MonoBehaviour
             candyCollected++;
             Debug.Log(candyCollected);
             _candyBar.sugarHighTime += sugarRushAmount;
+            anim.SetTrigger("CandyGrab");
         }
     }
 }
