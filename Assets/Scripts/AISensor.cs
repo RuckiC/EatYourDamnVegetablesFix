@@ -311,10 +311,10 @@ public class AISensor : MonoBehaviour
         }
 
         // Highlights player green if in seen range
-        Gizmos.color = Color.green;
+        /*Gizmos.color = Color.green;
         foreach(var obj in PlayerSeen)
         {
             Gizmos.DrawSphere(obj.transform.position, 1f);
-        }
+        }*/
     }
 }
