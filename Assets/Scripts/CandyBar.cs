@@ -10,8 +10,8 @@ public class CandyBar : MonoBehaviour
     public Image fill;
 
     public float sugarHighTime;
-    int interval = 1;
-    public float drainRate = 1;
+    public float interval = 0.25f;
+    public float drainRate = 0.25f;
     float nextTime = 0;
 
     // Start is called before the first frame update

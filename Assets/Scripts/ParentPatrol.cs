@@ -12,6 +12,8 @@ public class ParentPatrol : MonoBehaviour
     public AISensor _AISensor;
     public float gameOverRange;
 
+    public Animator anim;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -26,6 +28,7 @@ public class ParentPatrol : MonoBehaviour
 
     void Update()
     {
+        anim.SetTrigger("Walking");
         // Choose the next destination point when the agent gets
         // close to the current one.
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
@@ -63,6 +66,7 @@ public class ParentPatrol : MonoBehaviour
         if(_AISensor.PlayerChase.Count > 0)
         {
             agent.SetDestination(player.transform.position);
+            anim.SetTrigger("Chasing");
         }
     }
 }

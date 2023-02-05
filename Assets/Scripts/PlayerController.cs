@@ -124,7 +124,7 @@ public class PlayerController : MonoBehaviour
         {
             state = MovementState.crouching;
             moveSpeed = crouchSpeed;
-            _candyBar.drainRate = 0.75f;
+            _candyBar.drainRate = 0.5f;
         }
 
         // sprinting
@@ -147,7 +147,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             state = MovementState.air;
-            _candyBar.drainRate = 1;
+            _candyBar.drainRate = 2;
         }
     }
     private void MovePlayer()
