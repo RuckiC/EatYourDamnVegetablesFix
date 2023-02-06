@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverScreen;
     public GameObject winScreen;
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -48,7 +49,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void restartGame()
-    {             
+    {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

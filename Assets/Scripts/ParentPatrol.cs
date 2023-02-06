@@ -14,6 +14,10 @@ public class ParentPatrol : MonoBehaviour
 
     public Animator anim;
 
+    public GameObject gameOverScreenMom;
+
+    public GameManager gameManager;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -43,6 +47,14 @@ public class ParentPatrol : MonoBehaviour
         Vector3 distanceFromPlayer = this.transform.position - player.transform.position;
         if(distanceFromPlayer.magnitude <= gameOverRange)
         {
+            gameOverScreenMom.SetActive(true);
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            Time.timeScale = 0;
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                gameManager.restartGame();
+            }
             Debug.Log("YOU LOSE!!!");
         }
     }
