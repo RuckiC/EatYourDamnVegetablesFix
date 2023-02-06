@@ -9,12 +9,16 @@ public class DinnerBar : MonoBehaviour
     public Gradient gradient;
     public Image fill;
 
+    public GameManager gameManager;
+    public GameObject winScreen;
+
     public float foodGoesColdTime;
     int interval = 1;
     float nextTime = 0;
 
     private void Start()
     {
+        AudioSource audio = GetComponent<AudioSource>();
         SetMaxTemp(foodGoesColdTime);
     }
 
@@ -22,7 +26,6 @@ public class DinnerBar : MonoBehaviour
     {
         if (Time.time >= nextTime)
         {
-
             foodGoesColdTime -= 1;
             SetTemp(foodGoesColdTime);
 
@@ -30,6 +33,15 @@ public class DinnerBar : MonoBehaviour
 
             if (foodGoesColdTime <= 0)
             {
+                winScreen.SetActive(true);
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+                Time.timeScale = 0;
+                
+                if (Input.GetKeyDown(KeyCode.Return))
+                {
+                    gameManager.restartGame();
+                }
                 Debug.Log("Food Gone Cold, SUCK IT MOM!");
             }
         }
