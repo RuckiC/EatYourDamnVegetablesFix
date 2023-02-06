@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: 
     guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/Marco's Scene.unity
-    guid: 42faf14f859a1734f9f76416fc67e3af
+    path: Assets/Scenes/MainMenuScene.unity
+    guid: fa608914c6e1a6846b6062e9507ab799
+  - enabled: 1
+    path: Assets/Scenes/Game Scene.unity
+    guid: 8083b0752aee41241b9089d9bfb9a5ce
   m_configObjects: {}
